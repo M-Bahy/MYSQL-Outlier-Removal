@@ -25,7 +25,7 @@ df = pd.DataFrame(cursor.fetchall(), columns=['Server', 'Time', 'Value'])
 df['z_score'] = stats.zscore(df['Value'])
 
 # Define Z-score threshold
-threshold = 3  # or another value like 2
+threshold = 2  # or another value like 2
 
 # Identify outliers
 outliers = df[abs(df['z_score']) > threshold]
