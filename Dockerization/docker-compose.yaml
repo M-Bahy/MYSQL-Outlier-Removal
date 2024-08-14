@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 services:
   db:
     image: mysql:latest
@@ -8,9 +8,15 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 20s
+      retries: 10
+
   python-app:
     build: .
     environment:
@@ -18,11 +24,14 @@ services:
       DB_PASSWORD: password
       DB_HOST: db
       DB_NAME: mydatabase
+      DB_PORT: 3306
     volumes:
       - .:/app
     working_dir: /app
-    command: sh -c "python create_data.py && python remove_outliers.py && python process_data.py"
+    command: sh -c "python create_data.py && python remove_outlier.py && python process_data.py"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
 volumes:
   db_data:

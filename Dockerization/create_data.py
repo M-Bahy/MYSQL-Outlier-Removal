@@ -8,7 +8,8 @@ config = {
     'user': os.getenv('DB_USER', 'user'),
     'password': os.getenv('DB_PASSWORD', 'password'),
     'host': os.getenv('DB_HOST', 'db'),
-    'database': os.getenv('DB_NAME', 'mydatabase')
+    'database': os.getenv('DB_NAME', 'mydatabase'),
+    'port': os.getenv('DB_PORT', '3307')
 }
 
 # Create a database connection
