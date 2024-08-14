@@ -21,7 +21,7 @@ services:
     volumes:
       - .:/app
     working_dir: /app
-    command: python Process\ the\ data.py
+    command: sh -c "python remove_outliers.py && python Process\\ the\\ data.py"
     depends_on:
       - db
 volumes:
