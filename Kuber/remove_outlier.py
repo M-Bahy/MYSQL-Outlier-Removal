@@ -1,13 +1,15 @@
 import mysql.connector
 import pandas as pd
 from scipy import stats
+import os
 
-# Database connection configuration
+# Database connection configuration from environment variables
 config = {
-    'user': 'root',
-    'password': 'Bahy$2942002',
-    'host': 'localhost',
-    'database': 'bahy'
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+    'database': os.getenv('DB_NAME'),
+    'port': os.getenv('DB_PORT', '3307')
 }
 
 # Create a database connection
@@ -25,7 +27,7 @@ df = pd.DataFrame(cursor.fetchall(), columns=['Server', 'Time', 'Value'])
 df['z_score'] = stats.zscore(df['Value'])
 
 # Define Z-score threshold
-threshold = 1  # or another value like 2
+threshold = 2  # or another value like 2
 
 # Identify outliers
 outliers = df[abs(df['z_score']) > threshold]
