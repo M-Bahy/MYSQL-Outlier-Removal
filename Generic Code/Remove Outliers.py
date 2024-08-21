@@ -14,10 +14,10 @@ db_config = {
     'database': config['database']['database']
 }
 
-original_table_name = config['original']['table_name']
-server_column = config['original']['server_col_name']
-time_column = config['original']['time_col_name']
-value_column = config['original']['value_col_name']
+original_table_name = config['original_table']['table_name']
+server_column = config['original_table']['server_col_name']
+time_column = config['original_table']['time_col_name']
+value_column = config['original_table']['value_col_name']
 
 
 # Create a database connection
