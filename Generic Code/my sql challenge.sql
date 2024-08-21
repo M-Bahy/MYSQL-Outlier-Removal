@@ -14,7 +14,7 @@ select sum(Value) from original where time >= "2024-01-01 01:00:00" and  time <=
 select * from original where time >= "2024-01-01 01:00:00" and  time <= "2024-01-01 01:55:00" and server = 1
 
 
-select * from compact
+select * from compact_0018
 truncate table original
 drop table original 
 truncate table compact
