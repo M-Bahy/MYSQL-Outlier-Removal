@@ -1,28 +1,38 @@
 import mysql.connector
+import configparser
 import pandas as pd
 from scipy import stats
 
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 # Database connection configuration
-config = {
-    'user': 'root',
-    'password': 'Bahy$2942002',
-    'host': 'localhost',
-    'database': 'bahy'
+db_config = {
+    'user': config['database']['user'],
+    'password': config['database']['password'],
+    'host': config['database']['host'],
+    'database': config['database']['database']
 }
 
+original_table_name = config['original']['table_name']
+server_column = config['original']['server_col_name']
+time_column = config['original']['time_col_name']
+value_column = config['original']['value_col_name']
+
+
 # Create a database connection
-conn = mysql.connector.connect(**config)
+conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
 
 # Define the query to fetch data from the original table
-fetch_query = "SELECT Server, Time, Value FROM original"
+fetch_query = f"SELECT {server_column}, {time_column}, {value_column} FROM {original_table_name}"
 cursor.execute(fetch_query)
 
 # Fetch all rows into a DataFrame
-df = pd.DataFrame(cursor.fetchall(), columns=['Server', 'Time', 'Value'])
+df = pd.DataFrame(cursor.fetchall(), columns=[server_column, time_column, value_column])
 
 # Group by 'Server' and calculate Z-scores within each group
-df['z_score'] = df.groupby('Server')['Value'].transform(lambda x: stats.zscore(x))
+df['z_score'] = df.groupby(server_column)[value_column].transform(lambda x: stats.zscore(x))
 
 # Define Z-score threshold
 threshold = 1  # or another value like 2
@@ -31,11 +41,11 @@ threshold = 1  # or another value like 2
 outliers = df[abs(df['z_score']) > threshold]
 
 # Prepare a list of outlier records for deletion
-outlier_records = list(zip(outliers['Server'], outliers['Time']))
+outlier_records = list(zip(outliers[server_column], outliers[time_column]))
 
 # Convert list to a format suitable for SQL IN clause
 format_strings = ','.join(['(%s, %s)'] * len(outlier_records))
-delete_query = f"DELETE FROM original WHERE (Server, Time) IN ({format_strings})"
+delete_query = f"DELETE FROM {original_table_name} WHERE ({server_column}, {time_column}) IN ({format_strings})"
 
 # Flatten the list of tuples into a single tuple for execution
 flattened_values = [item for sublist in outlier_records for item in sublist]
