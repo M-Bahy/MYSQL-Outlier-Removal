@@ -47,7 +47,12 @@ threshold = 1  # or another value like 2
 
 # Identify outliers
 outliers = df[abs(df['z_score']) > threshold]
-print(f"Identified {len(outliers)} outliers.")
+print(f"Identified {len(outliers)} outliers in total.")
+
+# Count outliers per server
+outliers_per_server = outliers[server_column].value_counts()
+for server, count in outliers_per_server.items():
+    print(f"Identified {count} outliers in server '{server}'.")
 
 # Prepare a list of outlier records for deletion
 outlier_records = list(zip(outliers[server_column], outliers[time_column]))
