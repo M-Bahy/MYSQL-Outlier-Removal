@@ -15,7 +15,7 @@ select sum(samplevalue) from rn_qos_data_0018 where sampletime >= "2024-01-01 01
 select * from rn_qos_data_0018 where sampletime >= "2024-01-01 01:00:00" and  sampletime <= "2024-01-01 01:55:00" and table_id = 1
 
 
-select * from compact_0018_0018
+select * from compact_0018
 truncate table rn_qos_data_0018
 drop table rn_qos_data_0018 
 truncate table compact_0018
