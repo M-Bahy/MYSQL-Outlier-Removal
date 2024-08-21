@@ -2,9 +2,12 @@ import mysql.connector
 from datetime import datetime, timedelta
 import configparser
 
+print("Starting the data processing...")
+
 # Read configuration from config.ini
 config = configparser.ConfigParser()
 config.read('config.ini')
+print("Configuration file read successfully.")
 
 db_config = {
     'user': config['database']['user'],
@@ -29,9 +32,12 @@ compact_avg_col_name = config['compact_table']['avg_col_name']
 compact_total_col_name = config['compact_table']['total_col_name']
 compact_count_col_name = config['compact_table']['count_col_name']
 
+print("Database configuration loaded.")
+
 # Create a database connection
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
+print("Database connection established.")
 
 # Create the compact table if not exists
 cursor.execute(
@@ -48,6 +54,7 @@ CREATE TABLE IF NOT EXISTS {compact_table_name} (
 )
 """
 )
+print(f"Compact table '{compact_table_name}' ensured to exist.")
 
 # Define a query to get data from the original table
 query = f"""
@@ -62,6 +69,7 @@ SELECT {server_col_name},
 FROM {original_table_name}
 GROUP BY {server_col_name}, DATE({time_col_name}), HOUR({time_col_name})
 """
+print("Data aggregation query defined.")
 
 # Define a query to insert aggregated data into the compact table
 insert_query = f"""
@@ -74,10 +82,12 @@ ON DUPLICATE KEY UPDATE
     {compact_total_col_name} = VALUES({compact_total_col_name}),
     {compact_count_col_name} = VALUES({compact_count_col_name})
 """
+print("Insert query for compact table defined.")
 
 # Execute the query and insert data into the compact table
 cursor.execute(query)
 rows = cursor.fetchall()
+print(f"Fetched {len(rows)} rows from the original table.")
 
 for row in rows:
     server, date, hour, minimum, maximum, average, total, count = row
@@ -86,10 +96,13 @@ for row in rows:
     cursor.execute(
         insert_query, (server, time, minimum, maximum, average, total, count)
     )
+print("Data inserted into the compact table.")
 
 # Commit the transaction
 conn.commit()
+print("Transaction committed.")
 
 # Close the connection
 cursor.close()
 conn.close()
+print("Database connection closed.")
