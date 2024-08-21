@@ -4,7 +4,7 @@ import configparser
 
 # Read configuration from config.ini
 config = configparser.ConfigParser()
-config.read('Generic Code/config.ini')
+config.read('config.ini')
 
 db_config = {
     'user': config['database']['user'],
