@@ -13,10 +13,21 @@ db_config = {
     'database': config['database']['database']
 }
 
-table_name = config['original_table']['table_name']
+# Original table configuration
+original_table_name = config['original_table']['table_name']
 server_col_name = config['original_table']['server_col_name']
 time_col_name = config['original_table']['time_col_name']
 value_col_name = config['original_table']['value_col_name']
+
+# Compact table configuration
+compact_table_name = config['compact_table']['table_name']
+compact_server_col_name = config['compact_table']['server_col_name']
+compact_time_col_name = config['compact_table']['time_col_name']
+compact_min_col_name = config['compact_table']['min_col_name']
+compact_max_col_name = config['compact_table']['max_col_name']
+compact_avg_col_name = config['compact_table']['avg_col_name']
+compact_total_col_name = config['compact_table']['total_col_name']
+compact_count_col_name = config['compact_table']['count_col_name']
 
 # Create a database connection
 conn = mysql.connector.connect(**db_config)
@@ -24,16 +35,16 @@ cursor = conn.cursor()
 
 # Create the compact table if not exists
 cursor.execute(
-    """
-CREATE TABLE IF NOT EXISTS compact (
-    Server INT,
-    Time DATETIME,
-    Minimum INT,
-    Maximum INT,
-    Average FLOAT,
-    Total INT,
-    Count INT,
-    PRIMARY KEY (Server, Time)
+    f"""
+CREATE TABLE IF NOT EXISTS {compact_table_name} (
+    {compact_server_col_name} INT,
+    {compact_time_col_name} DATETIME,
+    {compact_min_col_name} INT,
+    {compact_max_col_name} INT,
+    {compact_avg_col_name} FLOAT,
+    {compact_total_col_name} INT,
+    {compact_count_col_name} INT,
+    PRIMARY KEY ({compact_server_col_name}, {compact_time_col_name})
 )
 """
 )
@@ -48,20 +59,20 @@ SELECT {server_col_name},
        AVG({value_col_name}) AS Average,
        SUM({value_col_name}) AS Total,
        COUNT({value_col_name}) AS Count
-FROM {table_name}
+FROM {original_table_name}
 GROUP BY {server_col_name}, DATE({time_col_name}), HOUR({time_col_name})
 """
 
 # Define a query to insert aggregated data into the compact table
-insert_query = """
-INSERT INTO compact (Server, Time, Minimum, Maximum, Average, Total, Count)
+insert_query = f"""
+INSERT INTO {compact_table_name} ({compact_server_col_name}, {compact_time_col_name}, {compact_min_col_name}, {compact_max_col_name}, {compact_avg_col_name}, {compact_total_col_name}, {compact_count_col_name})
 VALUES (%s, %s, %s, %s, %s, %s, %s)
 ON DUPLICATE KEY UPDATE
-    Minimum = VALUES(Minimum),
-    Maximum = VALUES(Maximum),
-    Average = VALUES(Average),
-    Total = VALUES(Total),
-    Count = VALUES(Count)
+    {compact_min_col_name} = VALUES({compact_min_col_name}),
+    {compact_max_col_name} = VALUES({compact_max_col_name}),
+    {compact_avg_col_name} = VALUES({compact_avg_col_name}),
+    {compact_total_col_name} = VALUES({compact_total_col_name}),
+    {compact_count_col_name} = VALUES({compact_count_col_name})
 """
 
 # Execute the query and insert data into the compact table
