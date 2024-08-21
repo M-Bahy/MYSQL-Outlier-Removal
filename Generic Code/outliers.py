@@ -6,21 +6,21 @@ from scipy import stats
 print("Starting the outlier removal process...")
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read("config.ini")
 print("Configuration file read successfully.")
 
 # Database connection configuration
 db_config = {
-    'user': config['database']['user'],
-    'password': config['database']['password'],
-    'host': config['database']['host'],
-    'database': config['database']['database']
+    "user": config["database"]["user"],
+    "password": config["database"]["password"],
+    "host": config["database"]["host"],
+    "database": config["database"]["database"],
 }
 
-original_table_name = config['original_table']['table_name']
-server_column = config['original_table']['server_col_name']
-time_column = config['original_table']['time_col_name']
-value_column = config['original_table']['value_col_name']
+original_table_name = config["original_table"]["table_name"]
+server_column = config["original_table"]["server_col_name"]
+time_column = config["original_table"]["time_col_name"]
+value_column = config["original_table"]["value_col_name"]
 
 print("Database configuration loaded.")
 
@@ -30,7 +30,9 @@ cursor = conn.cursor()
 print("Database connection established.")
 
 # Define the query to fetch data from the original table
-fetch_query = f"SELECT {server_column}, {time_column}, {value_column} FROM {original_table_name}"
+fetch_query = (
+    f"SELECT {server_column}, {time_column}, {value_column} FROM {original_table_name}"
+)
 cursor.execute(fetch_query)
 print("Data fetch query executed.")
 
@@ -39,14 +41,16 @@ df = pd.DataFrame(cursor.fetchall(), columns=[server_column, time_column, value_
 print(f"Fetched {len(df)} rows from the database.")
 
 # Group by 'Server' and calculate Z-scores within each group
-df['z_score'] = df.groupby(server_column)[value_column].transform(lambda x: stats.zscore(x))
+df["z_score"] = df.groupby(server_column)[value_column].transform(
+    lambda x: stats.zscore(x)
+)
 print("Z-scores calculated.")
 
 # Define Z-score threshold
-threshold = 1  # or another value like 2
+threshold = int(config["z_score"]["threshold"])  # or another value like 2
 
 # Identify outliers
-outliers = df[abs(df['z_score']) > threshold]
+outliers = df[abs(df["z_score"]) > threshold]
 print(f"Identified {len(outliers)} outliers in total.")
 
 # Count outliers per server
@@ -58,7 +62,7 @@ for server, count in outliers_per_server.items():
 outlier_records = list(zip(outliers[server_column], outliers[time_column]))
 
 # Convert list to a format suitable for SQL IN clause
-format_strings = ','.join(['(%s, %s)'] * len(outlier_records))
+format_strings = ",".join(["(%s, %s)"] * len(outlier_records))
 delete_query = f"DELETE FROM {original_table_name} WHERE ({server_column}, {time_column}) IN ({format_strings})"
 
 # Flatten the list of tuples into a single tuple for execution
