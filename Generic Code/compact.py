@@ -6,31 +6,31 @@ print("Starting the data processing...")
 
 # Read configuration from config.ini
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read("config.ini")
 print("Configuration file read successfully.")
 
 db_config = {
-    'user': config['database']['user'],
-    'password': config['database']['password'],
-    'host': config['database']['host'],
-    'database': config['database']['database']
+    "user": config["database"]["user"],
+    "password": config["database"]["password"],
+    "host": config["database"]["host"],
+    "database": config["database"]["database"],
 }
 
 # Original table configuration
-original_table_name = config['original_table']['table_name']
-server_col_name = config['original_table']['server_col_name']
-time_col_name = config['original_table']['time_col_name']
-value_col_name = config['original_table']['value_col_name']
+original_table_name = config["original_table"]["table_name"]
+server_col_name = config["original_table"]["server_col_name"]
+time_col_name = config["original_table"]["time_col_name"]
+value_col_name = config["original_table"]["value_col_name"]
 
 # Compact table configuration
-compact_table_name = config['compact_table']['table_name']
-compact_server_col_name = config['compact_table']['server_col_name']
-compact_time_col_name = config['compact_table']['time_col_name']
-compact_min_col_name = config['compact_table']['min_col_name']
-compact_max_col_name = config['compact_table']['max_col_name']
-compact_avg_col_name = config['compact_table']['avg_col_name']
-compact_total_col_name = config['compact_table']['total_col_name']
-compact_count_col_name = config['compact_table']['count_col_name']
+compact_table_name = config["compact_table"]["table_name"]
+compact_server_col_name = config["compact_table"]["server_col_name"]
+compact_time_col_name = config["compact_table"]["time_col_name"]
+compact_min_col_name = config["compact_table"]["min_col_name"]
+compact_max_col_name = config["compact_table"]["max_col_name"]
+compact_avg_col_name = config["compact_table"]["avg_col_name"]
+compact_total_col_name = config["compact_table"]["total_col_name"]
+compact_count_col_name = config["compact_table"]["count_col_name"]
 
 print("Database configuration loaded.")
 
@@ -106,3 +106,8 @@ print("Transaction committed.")
 cursor.close()
 conn.close()
 print("Database connection closed.")
+
+# Wait for Enter key before closing
+while True:
+    if input("Press Enter to exit...") == "":
+        break

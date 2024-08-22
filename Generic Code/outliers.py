@@ -79,3 +79,8 @@ conn.close()
 print("Database connection closed.")
 
 print(f"Removed {len(outlier_records)} outliers.")
+
+# Wait for Enter key before closing
+while True:
+    if input("Press Enter to exit...") == "":
+        break
