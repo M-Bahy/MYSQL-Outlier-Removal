@@ -1,4 +1,7 @@
 Generic Code/dist/*
 Generic Code/build/*
-Generic Code/*.spec
 *.exe
+Generic Code/TMP/build/*
+Generic Code/TMP/dist/*
+Generic Code/TMP/venv/*
+*.spec
