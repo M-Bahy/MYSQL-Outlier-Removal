@@ -1,7 +1,8 @@
 import mysql.connector
 import configparser
-import pandas as pd
-from scipy import stats
+
+from pandas import DataFrame
+from scipy.stats import zscore
 
 print("Starting the outlier removal process...")
 
@@ -37,13 +38,11 @@ cursor.execute(fetch_query)
 print("Data fetch query executed.")
 
 # Fetch all rows into a DataFrame
-df = pd.DataFrame(cursor.fetchall(), columns=[server_column, time_column, value_column])
+df = DataFrame(cursor.fetchall(), columns=[server_column, time_column, value_column])
 print(f"Fetched {len(df)} rows from the database.")
 
 # Group by 'Server' and calculate Z-scores within each group
-df["z_score"] = df.groupby(server_column)[value_column].transform(
-    lambda x: stats.zscore(x)
-)
+df["z_score"] = df.groupby(server_column)[value_column].transform(lambda x: zscore(x))
 print("Z-scores calculated.")
 
 # Define Z-score threshold
