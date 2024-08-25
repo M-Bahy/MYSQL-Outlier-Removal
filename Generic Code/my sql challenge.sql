@@ -7,7 +7,7 @@ select count(*) from rn_qos_data_0018 where (samplevalue < 30 or samplevalue >50
 select count(*) from rn_qos_data_0018 where (samplevalue < 30 or samplevalue >50) and table_id =3
 truncate table compact_0018
 select * from rn_qos_data_0018
-select table_id , samplesampletime , samplesamplevalue from rn_qos_data_0018
+select table_id , sampletime , samplevalue from rn_qos_data_0018
 select sum(samplevalue) from rn_qos_data_0018 where sampletime < "2024-01-01 01:00:00" and table_id = 1
 select * from rn_qos_data_0018 where sampletime < "2024-01-01 01:00:00" and table_id = 1
 
