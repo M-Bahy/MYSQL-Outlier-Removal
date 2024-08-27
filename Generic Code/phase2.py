@@ -12,26 +12,29 @@ db_config = {
     "database": config["database"]["database"],
 }
 
+# Read table name from the .ini file
+phase2_table_name = config["tables"]["phase2"]
+
 # Create a database connection
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
 print("Database connection established.")
 
 # Drop the phase2 table if it exists
-cursor.execute("DROP TABLE IF EXISTS phase2")
-print("Dropped existing phase2 table if it existed.")
+cursor.execute(f"DROP TABLE IF EXISTS {phase2_table_name}")
+print(f"Dropped existing {phase2_table_name} table if it existed.")
 
 # Create the phase2 table
 cursor.execute(
-    """
-CREATE TABLE phase2 (
+    f"""
+CREATE TABLE {phase2_table_name} (
     Hours INT,
     average_value FLOAT,
     Server INT
 )
 """
 )
-print("Created phase2 table.")
+print(f"Created {phase2_table_name} table.")
 
 # Define the query to calculate the accumulated average
 query = f"""
@@ -53,13 +56,13 @@ results = cursor.fetchall()
 print(f"Fetched {len(results)} rows from the compact table.")
 
 # Insert the results into the phase2 table
-insert_query = """
-INSERT INTO phase2 (Hours, average_value, Server)
+insert_query = f"""
+INSERT INTO {phase2_table_name} (Hours, average_value, Server)
 VALUES (%s, %s, %s)
 """
 for row in results:
     cursor.execute(insert_query, row)
-print("Data inserted into the phase2 table.")
+print(f"Data inserted into the {phase2_table_name} table.")
 
 # Commit the transaction
 conn.commit()

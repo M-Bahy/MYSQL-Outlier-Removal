@@ -20,3 +20,17 @@ truncate table rn_qos_data_0018
 drop table rn_qos_data_0018 
 truncate table compact_0018
 ALTER TABLE rn_qos_data_0018
+
+SELECT 
+    HOUR(Time) AS Hours,
+    SUM(total) / SUM(count) AS average_value,
+     Server
+FROM 
+    compact_0018
+GROUP BY 
+    Hours, 
+    Server;
+
+
+select * from phase2
+select * from phase2_og
